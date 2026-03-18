@@ -1,17 +1,51 @@
-{
-  "buildCommand": "",
-  "outputDirectory": "public",
-  "framework": null,
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" }
-      ]
-    }
-  ]
-}
+# GeoAssist — Boring Log Co-Pilot
+
+Real-time boring log interpretation tool for geotechnical field engineers. Built as a standalone web app that works on tablets in the field.
+
+## Features
+
+- **Auto USCS Classification** — Type a field description, get instant soil classification using pattern matching against standard geotechnical terminology
+- **SPT N-value Corrections** — Full correction chain: N → N₆₀ (CE, CB, CR, CS) → (N₁)₆₀ per Liao & Whitman (1986)
+- **4 Blow Count Intervals** — 0-6", 6-12", 12-18", 18-24" per ASTM D1586
+- **Real-time Parameter Estimation** — φ', Dr, E for coarse soils; Su, consistency, Es for fine soils with source citations
+- **Anomaly Detection** — Flags low recovery, high seating blows, N-value drops/spikes, refusal, organic soils, drilling issues
+- **PDF Export** — YU & Associates gINT-format boring log with N-value depth profile
+- **Auto-save** — All data persists to localStorage, survives tab close and browser restart
+- **JSON Import/Export** — Share borings between devices as JSON files
+- **Multi-boring Management** — Sidebar with boring list, switch between borings, project-level export
+- **Offline Support** — PWA with service worker caching, works without network after first load
+- **Tablet-optimized** — Designed for field use on iPad/tablet with touch-friendly inputs
+
+## Deploy
+
+### Vercel (recommended)
+```bash
+npx vercel
+```
+
+### Any static host
+Just serve the `public/` folder. The entire app is a single HTML file with no build step.
+
+### Local development
+```bash
+npx serve public -l 3000
+```
+
+## Architecture
+
+Single-file static web app. No backend, no build step, no dependencies beyond two CDN-hosted libraries (jsPDF, jsPDF-AutoTable) and Google Fonts.
+
+Data model: `Project → Borings → Samples`, stored in localStorage as JSON. The same schema maps cleanly to a database for future FieldLog integration.
+
+## Corrections & References
+
+- **Energy ratio (CE)**: Auto-trip = 1.00, Safety = 0.75, Donut = 0.60
+- **Borehole diameter (CB)**: 4" = 1.05 (default)
+- **Rod length (CR)**: Variable per Skempton (1986)
+- **Sampler (CS)**: With liner = 1.00, Without liner = 1.20
+- **Overburden (CN)**: Liao & Whitman (1986), CN = √(Pa/σ'v), max 2.0
+- **Effective stress**: Accounts for GWL when entered (γ above, γ' below)
+
+## License
+
+Proprietary — YU & Associates, Inc.
